@@ -511,9 +511,13 @@ export default function DigitalMenu({ initialCategories, initialDishes }: Digita
                         >
                           <div
                             className="thumb"
-                            style={{ background: getToneBg(d.tone) }}
+                            style={{ background: getToneBg(d.tone), overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                           >
-                            {d.emoji}
+                            {d.image_url ? (
+                              <img src={d.image_url} alt={d.name} className="w-full h-full object-cover" />
+                            ) : (
+                              d.emoji
+                            )}
                             {!d.available && (
                               <div className="soldout">
                                 Agotado
@@ -805,9 +809,13 @@ export default function DigitalMenu({ initialCategories, initialDishes }: Digita
             {/* Sheet hero */}
             <div
               className="sheet-hero"
-              style={{ background: getToneBg(selectedDish.tone) }}
+              style={{ background: getToneBg(selectedDish.tone), overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             >
-              {selectedDish.emoji}
+              {selectedDish.image_url ? (
+                <img src={selectedDish.image_url} alt={selectedDish.name} className="w-full h-full object-cover" />
+              ) : (
+                selectedDish.emoji
+              )}
               <button className="sheet-close" onClick={closeDish}>×</button>
             </div>
 

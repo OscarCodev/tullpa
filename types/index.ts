@@ -14,5 +14,6 @@ export interface Dish {
   tone: number
   available: boolean
   desc: string
+  image_url?: string | null
   created_at?: string
 }

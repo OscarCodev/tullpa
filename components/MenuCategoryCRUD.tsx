@@ -19,6 +19,7 @@ interface Dish {
   available: boolean
   emoji: string
   tone: number
+  image_url: string | null
   created_at: string
 }
 
@@ -51,6 +52,8 @@ export default function MenuCategoryCRUD() {
     available: boolean
     emoji: string
     tone: number
+    image_url: string
+    imageFile: File | null
   }>({
     open: false,
     mode: 'create',
@@ -61,6 +64,8 @@ export default function MenuCategoryCRUD() {
     available: true,
     emoji: '🍲',
     tone: 30,
+    image_url: '',
+    imageFile: null,
   })
 
   async function fetchData() {
@@ -153,13 +158,29 @@ export default function MenuCategoryCRUD() {
   // Dishes CRUD Handlers
   async function handleSaveDish(e: React.FormEvent) {
     e.preventDefault()
-    const { name, desc, price, category_id, available, emoji, tone, id, mode } = dishModal
+    const { name, desc, price, category_id, available, emoji, tone, id, mode, image_url, imageFile } = dishModal
     if (!name || !price || !category_id || !emoji) {
       alert('Por favor completa los campos requeridos.')
       return
     }
 
     try {
+      let finalImageUrl = image_url
+      if (imageFile) {
+        const fileName = `${Date.now()}-${imageFile.name}`
+        const { data, error } = await supabase.storage
+          .from('dish-images')
+          .upload(fileName, imageFile)
+
+        if (error) throw error
+        if (data) {
+          const { data: urlData } = supabase.storage
+            .from('dish-images')
+            .getPublicUrl(data.path)
+          finalImageUrl = urlData.publicUrl
+        }
+      }
+
       const payload = {
         name,
         desc,
@@ -168,6 +189,7 @@ export default function MenuCategoryCRUD() {
         available,
         emoji,
         tone,
+        image_url: finalImageUrl || null,
       }
 
       if (mode === 'create') {
@@ -188,6 +210,8 @@ export default function MenuCategoryCRUD() {
         available: true,
         emoji: '🍲',
         tone: 30,
+        image_url: '',
+        imageFile: null,
       })
       fetchData()
     } catch (err: any) {
@@ -283,6 +307,8 @@ export default function MenuCategoryCRUD() {
                   available: true,
                   emoji: '🍲',
                   tone: 30,
+                  image_url: '',
+                  imageFile: null,
                 })
               }}
               className="dbtn gold"
@@ -309,8 +335,12 @@ export default function MenuCategoryCRUD() {
                 const cat = categories.find((c) => c.id === dish.category_id)
                 return (
                   <div key={dish.id} className="mrow">
-                    <div className="mth" style={{ filter: `hue-rotate(${dish.tone}deg)` }}>
-                      {dish.emoji}
+                    <div className="mth" style={{ filter: `hue-rotate(${dish.tone}deg)`, overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      {dish.image_url ? (
+                        <img src={dish.image_url} alt={dish.name} className="w-full h-full object-cover rounded-[11px]" />
+                      ) : (
+                        dish.emoji
+                      )}
                     </div>
                     <div>
                       <div className="mn">{dish.name}</div>
@@ -343,6 +373,8 @@ export default function MenuCategoryCRUD() {
                             available: dish.available,
                             emoji: dish.emoji,
                             tone: dish.tone,
+                            image_url: dish.image_url || '',
+                            imageFile: null,
                           })
                         }
                         className="iconbtn"
@@ -516,6 +548,34 @@ export default function MenuCategoryCRUD() {
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
               <div className="dfield">
+                <label>Foto del Plato (Archivo)</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0] || null
+                    setDishModal((prev) => ({ ...prev, imageFile: file }))
+                  }}
+                  style={{
+                    padding: '8px 0',
+                    color: 'var(--ink-soft)'
+                  }}
+                />
+              </div>
+
+              <div className="dfield">
+                <label>O URL de Imagen (Manual)</label>
+                <input
+                  type="text"
+                  value={dishModal.image_url}
+                  onChange={(e) => setDishModal((prev) => ({ ...prev, image_url: e.target.value }))}
+                  placeholder="https://ejemplo.com/plato.jpg"
+                />
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div className="dfield">
                 <label>Precio (S/)</label>
                 <input
                   type="number"
@@ -601,6 +661,8 @@ export default function MenuCategoryCRUD() {
                     available: true,
                     emoji: '🍲',
                     tone: 30,
+                    image_url: '',
+                    imageFile: null,
                   })
                 }
                 className="btn btn-ghost"

@@ -22,6 +22,7 @@ const mockDishes = [
     available: true,
     emoji: '🐟',
     tone: 0,
+    image_url: null,
     created_at: new Date().toISOString()
   },
   {
@@ -33,6 +34,7 @@ const mockDishes = [
     available: false,
     emoji: '🥩',
     tone: 30,
+    image_url: 'https://example.com/lomo.jpg',
     created_at: new Date().toISOString()
   }
 ]
@@ -54,6 +56,12 @@ const mockDelete = vi.fn(() => ({
 
 vi.mock('../utils/supabase/client', () => ({
   createClient: vi.fn(() => ({
+    storage: {
+      from: vi.fn(() => ({
+        upload: vi.fn(() => Promise.resolve({ data: { path: 'test-path.jpg' }, error: null })),
+        getPublicUrl: vi.fn(() => ({ data: { publicUrl: 'https://example.com/test-path.jpg' } }))
+      }))
+    },
     from: vi.fn((table) => {
       if (table === 'categories') {
         return {

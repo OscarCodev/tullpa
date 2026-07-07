@@ -85,6 +85,7 @@ const mockDishes = [
     tone: 44,
     available: true,
     desc: 'Masa de papa amarilla al limón rellena de pollo.',
+    image_url: null,
   },
 ]
 

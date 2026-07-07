@@ -29,11 +29,11 @@ The system SHALL render a sticky, horizontal category bar containing category ch
 - **THEN** the browser smoothly scrolls the view to show the header of that category section
 
 ### Requirement: Responsive Dish Cards with Status Indicators (HU-01)
-The system SHALL display dishes as cards in a responsive layout. Each card MUST display its emoji, name, short description, and price in Peruvian Soles (S/).
+The system SHALL display dishes as cards in a responsive layout. Each card MUST display its name, short description, and price in Peruvian Soles (S/), along with a real image if available (falling back to a default visual representation or emoji otherwise).
 
 #### Scenario: Card rendering
 - **WHEN** a dish is listed on the menu
-- **THEN** the card renders a warm HSL gradient block, a centered emoji, name, short description, and price (e.g., S/ 32.00)
+- **THEN** the card renders the dish's real image (or fallback visual representation), name, short description, and price (e.g., S/ 32.00)
 
 ### Requirement: Sold Out Dish Overlay
 Dishes where `available` is false SHALL display an "Agotado hoy" visual overlay and disable card clicking.
@@ -43,9 +43,9 @@ Dishes where `available` is false SHALL display an "Agotado hoy" visual overlay 
 - **THEN** the click interaction is ignored, and the detail sheet modal does not open
 
 ### Requirement: Modal Dish Details Bottom Sheet (HU-02)
-The system SHALL show a slide-up drawer modal when an available dish card is clicked, presenting the dish emoji, name, full description, and price.
+The system SHALL show a slide-up drawer modal when an available dish card is clicked, presenting the dish real image (or fallback representation), name, full description, and price.
 
 #### Scenario: Open dish detail drawer
 - **WHEN** the customer clicks on an available dish card
-- **THEN** the bottom sheet modal slides into view from the screen bottom displaying the detailed view, along with a close button
+- **THEN** the bottom sheet modal slides into view from the screen bottom displaying the detailed view with the real image, along with a close button
 
