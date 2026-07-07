@@ -2,15 +2,13 @@
 
 ## Purpose
 This capability covers the staff dashboard layout, columns categorizing orders by status, card details display, and order status transition triggers.
-
 ## Requirements
-
 ### Requirement: Staff Dashboard Layout
-The system SHALL provide a staff dashboard view organizing active orders into columns matching their current statuses: Recibido, En preparación, Listo, and Entregado. Each card representing an order SHALL show the table number, customer name, order code, total value, and the list of items ordered.
+The system SHALL provide a staff dashboard view organizing active orders into columns matching their current statuses: Recibido, En preparación, Listo, and Entregado. Each card representing an order SHALL show the table number, customer name, order code, total value, and the list of items ordered. The columns MUST render in a grid layout on desktop/tablet, and adapt dynamically (e.g. stack vertically or present tab-based view switching) on small mobile screens.
 
 #### Scenario: View active orders in columns
 - **WHEN** the staff member opens the dashboard and there are active orders
-- **THEN** the system displays each order card in its respective status column, with itemized quantities, notes, and totals
+- **THEN** the system displays each order card in its respective status column, with itemized quantities, notes, and totals, adapting the layout cleanly depending on screen width
 
 ### Requirement: Real-time Order Updates
 The system SHALL subscribe to updates on the `orders` and `order_items` tables using Supabase Realtime, immediately updating the card listings on the columns when a customer places a new order or updates its state without requiring a manual page refresh.
@@ -25,3 +23,4 @@ The system SHALL display action buttons on each order card to advance the order 
 #### Scenario: Advance order status to preparation
 - **WHEN** the staff member clicks "Preparar" on a card in the "Recibido" column
 - **THEN** the system updates the order's status in Supabase to `preparacion` and moves the card to the "En preparación" column
+

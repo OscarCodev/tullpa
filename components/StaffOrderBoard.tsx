@@ -34,6 +34,7 @@ export default function StaffOrderBoard() {
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [activeStatusTab, setActiveStatusTab] = useState<'recibido' | 'preparacion' | 'listo' | 'entregado'>('recibido')
 
   async function fetchOrders() {
     try {
@@ -122,12 +123,31 @@ export default function StaffOrderBoard() {
   }
 
   return (
-    <div className="board">
-      {COLUMNS.map((col) => {
-        const colOrders = orders.filter((o) => o.status === col.status)
+    <div className="space-y-4">
+      {/* Mobile Status Tabs */}
+      <div className="staff-tabs" style={{ display: 'none', gap: '8px', marginBottom: '16px', overflowX: 'auto', paddingBottom: '8px' }}>
+        {COLUMNS.map((col) => {
+          const count = orders.filter((o) => o.status === col.status).length
+          const isActive = activeStatusTab === col.status
+          return (
+            <button
+              key={col.status}
+              onClick={() => setActiveStatusTab(col.status)}
+              className={`dbtn ${isActive ? 'gold' : 'ghost'}`}
+              style={{ flexShrink: 0, padding: '8px 14px', fontSize: '12px' }}
+            >
+              {col.icon} {col.label} ({count})
+            </button>
+          )
+        })}
+      </div>
 
-        return (
-          <div key={col.status} className="col">
+      <div className={`board active-${activeStatusTab}`}>
+        {COLUMNS.map((col) => {
+          const colOrders = orders.filter((o) => o.status === col.status)
+
+          return (
+            <div key={col.status} className="col" data-status={col.status}>
             <div className="col-head">
               <span className="k" style={{ backgroundColor: col.color }} />
               <h3 style={{ color: 'var(--night-ink)' }}>{col.label}</h3>
@@ -211,6 +231,7 @@ export default function StaffOrderBoard() {
           </div>
         )
       })}
+      </div>
     </div>
   )
 }

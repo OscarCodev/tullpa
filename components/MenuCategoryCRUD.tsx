@@ -546,7 +546,7 @@ export default function MenuCategoryCRUD() {
               />
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+            <div className="field-grid">
               <div className="dfield">
                 <label>Foto del Plato (Archivo)</label>
                 <input
@@ -574,7 +574,7 @@ export default function MenuCategoryCRUD() {
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+            <div className="field-grid">
               <div className="dfield">
                 <label>Precio (S/)</label>
                 <input
@@ -605,7 +605,7 @@ export default function MenuCategoryCRUD() {
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+            <div className="field-grid">
               <div className="dfield">
                 <label>Emoji / Icono</label>
                 <input
