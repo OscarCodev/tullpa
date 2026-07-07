@@ -16,7 +16,7 @@ const mockDishes = [
   {
     id: 'd1',
     name: 'Ceviche Clásico',
-    description: 'Pescado fresco marinado en limón',
+    desc: 'Pescado fresco marinado en limón',
     price: 30.00,
     category_id: 'c1',
     available: true,
@@ -27,7 +27,7 @@ const mockDishes = [
   {
     id: 'd2',
     name: 'Lomo Saltado',
-    description: 'Lomo con cebolla y tomate',
+    desc: 'Lomo con cebolla y tomate',
     price: 40.00,
     category_id: 'c2',
     available: false,

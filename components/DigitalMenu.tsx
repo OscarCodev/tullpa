@@ -34,6 +34,10 @@ export default function DigitalMenu({ initialCategories, initialDishes }: Digita
   const tableNumber = searchParams.get('table') || searchParams.get('mesa') || '7'
   const supabase = createClient()
 
+  // ── Stateful menu items ──────────────────────────────────────────────────
+  const [categories, setCategories] = useState<Category[]>(initialCategories)
+  const [dishes, setDishes] = useState<Dish[]>(initialDishes)
+
   // ── Modal state ──────────────────────────────────────────────────────────
   const [selectedDishId, setSelectedDishId] = useState<string | null>(null)
   const [sheetOpen, setSheetOpen] = useState(false)
@@ -52,7 +56,7 @@ export default function DigitalMenu({ initialCategories, initialDishes }: Digita
     setTimeout(() => setSelectedDishId(null), 350)
   }
 
-  const selectedDish = initialDishes.find((d) => d.id === selectedDishId)
+  const selectedDish = dishes.find((d) => d.id === selectedDishId)
 
   // ── Cart / View state ─────────────────────────────────────────────────────
   const [cart, setCart] = useState<Record<string, number>>({})
@@ -68,7 +72,7 @@ export default function DigitalMenu({ initialCategories, initialDishes }: Digita
 
   const cartCount = Object.values(cart).reduce((sum, qty) => sum + qty, 0)
   const cartTotal = Object.entries(cart).reduce((sum, [dishId, qty]) => {
-    const dish = initialDishes.find((d) => d.id === dishId)
+    const dish = dishes.find((d) => d.id === dishId)
     return sum + (dish ? dish.price * qty : 0)
   }, 0)
 
@@ -136,7 +140,7 @@ export default function DigitalMenu({ initialCategories, initialDishes }: Digita
 
       // 3. Prepare order items
       const itemsToInsert = Object.entries(cart).map(([dishId, qty]) => {
-        const dish = initialDishes.find((d) => d.id === dishId)
+        const dish = dishes.find((d) => d.id === dishId)
         if (!dish) throw new Error(`Plato no encontrado: ${dishId}`)
         return {
           order_id: orderData.id,
@@ -232,6 +236,59 @@ export default function DigitalMenu({ initialCategories, initialDishes }: Digita
       }
     }
     initAuth()
+  }, [supabase])
+
+  // ── Live Menu Realtime subscription ──────────────────────────────────────
+  useEffect(() => {
+    const channel = supabase
+      .channel('menu-realtime-changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'dishes' },
+        (payload) => {
+          if (payload.eventType === 'INSERT') {
+            const newItem = {
+              ...payload.new,
+              price: Number(payload.new.price),
+            } as Dish
+            setDishes((prev) => [...prev, newItem])
+          } else if (payload.eventType === 'UPDATE') {
+            const updatedItem = {
+              ...payload.new,
+              price: Number(payload.new.price),
+            } as Dish
+            setDishes((prev) =>
+              prev.map((d) => (d.id === updatedItem.id ? updatedItem : d))
+            )
+          } else if (payload.eventType === 'DELETE') {
+            const deletedItem = payload.old as { id: string }
+            setDishes((prev) => prev.filter((d) => d.id !== deletedItem.id))
+          }
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'categories' },
+        (payload) => {
+          if (payload.eventType === 'INSERT') {
+            const newItem = payload.new as Category
+            setCategories((prev) => [...prev, newItem])
+          } else if (payload.eventType === 'UPDATE') {
+            const updatedItem = payload.new as Category
+            setCategories((prev) =>
+              prev.map((c) => (c.id === updatedItem.id ? updatedItem : c))
+            )
+          } else if (payload.eventType === 'DELETE') {
+            const deletedItem = payload.old as { id: string }
+            setCategories((prev) => prev.filter((c) => c.id !== deletedItem.id))
+          }
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
   }, [supabase])
 
   // ── Restore active order tracking on mount ───────────────────────────────
@@ -377,7 +434,7 @@ export default function DigitalMenu({ initialCategories, initialDishes }: Digita
     return `linear-gradient(140deg, hsl(${t} 62% 88%), hsl(${(t + 20) % 360} 55% 78%))`
   }
 
-  const [activeCategoryId, setActiveCategoryId] = useState<string | null>(initialCategories[0]?.id || null)
+  const [activeCategoryId, setActiveCategoryId] = useState<string | null>(categories[0]?.id || null)
 
   function scrollToCategory(catId: string) {
     setActiveCategoryId(catId)
@@ -413,8 +470,8 @@ export default function DigitalMenu({ initialCategories, initialDishes }: Digita
             {/* Sticky Category Rail */}
             <nav className="catrail">
               <div className="catrail-in">
-                {initialCategories.map((c) => {
-                  const count = initialDishes.filter((d) => d.category_id === c.id).length
+                {categories.map((c) => {
+                  const count = dishes.filter((d) => d.category_id === c.id).length
                   const isActive = activeCategoryId === c.id
                   return (
                     <button
@@ -433,24 +490,24 @@ export default function DigitalMenu({ initialCategories, initialDishes }: Digita
 
             {/* Menu Sections */}
             <div id="menuSections">
-              {initialCategories.map((c) => {
-                const dishes = initialDishes.filter((d) => d.category_id === c.id)
-                if (dishes.length === 0) return null
+              {categories.map((c) => {
+                const categoryDishes = dishes.filter((d) => d.category_id === c.id)
+                if (categoryDishes.length === 0) return null
 
                 return (
                   <section key={c.id} id={`sec-${c.id}`} className="catsec">
                     <div className="catsec-head">
                       <h2>{c.emoji} {c.name}</h2>
                       <div className="rule" />
-                      <span className="cnt">{dishes.length} platos</span>
+                      <span className="cnt">{categoryDishes.length} platos</span>
                     </div>
 
                     <div className="grid">
-                      {dishes.map((d) => (
+                      {categoryDishes.map((d) => (
                         <div
-                          key={d.id}
-                          className={`card${d.available ? '' : ' out'}`}
-                          onClick={() => d.available && openDish(d.id)}
+                           key={d.id}
+                           className={`card${d.available ? '' : ' out'}`}
+                           onClick={() => d.available && openDish(d.id)}
                         >
                           <div
                             className="thumb"
@@ -543,7 +600,7 @@ export default function DigitalMenu({ initialCategories, initialDishes }: Digita
               <>
                 {/* List items */}
                 {Object.entries(cart).map(([dishId, qty]) => {
-                  const dish = initialDishes.find((d) => d.id === dishId)
+                  const dish = dishes.find((d) => d.id === dishId)
                   if (!dish) return null
                   return (
                     <div key={dishId} className="citem">
@@ -757,8 +814,8 @@ export default function DigitalMenu({ initialCategories, initialDishes }: Digita
             {/* Sheet body */}
             <div className="sheet-body">
               <div className="cat-lbl">
-                {initialCategories.find((c) => c.id === selectedDish.category_id)?.emoji}{' '}
-                {initialCategories.find((c) => c.id === selectedDish.category_id)?.name}{' '}
+                {categories.find((c) => c.id === selectedDish.category_id)?.emoji}{' '}
+                {categories.find((c) => c.id === selectedDish.category_id)?.name}{' '}
                 <span className="hu">HU-02</span>
               </div>
               <h2>{selectedDish.name}</h2>

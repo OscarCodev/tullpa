@@ -13,7 +13,7 @@ interface Category {
 interface Dish {
   id: string
   name: string
-  description: string
+  desc: string
   price: number
   category_id: string
   available: boolean
@@ -45,7 +45,7 @@ export default function MenuCategoryCRUD() {
     mode: 'create' | 'edit'
     id?: string
     name: string
-    description: string
+    desc: string
     price: string
     category_id: string
     available: boolean
@@ -55,7 +55,7 @@ export default function MenuCategoryCRUD() {
     open: false,
     mode: 'create',
     name: '',
-    description: '',
+    desc: '',
     price: '',
     category_id: '',
     available: true,
@@ -153,7 +153,7 @@ export default function MenuCategoryCRUD() {
   // Dishes CRUD Handlers
   async function handleSaveDish(e: React.FormEvent) {
     e.preventDefault()
-    const { name, description, price, category_id, available, emoji, tone, id, mode } = dishModal
+    const { name, desc, price, category_id, available, emoji, tone, id, mode } = dishModal
     if (!name || !price || !category_id || !emoji) {
       alert('Por favor completa los campos requeridos.')
       return
@@ -162,7 +162,7 @@ export default function MenuCategoryCRUD() {
     try {
       const payload = {
         name,
-        description,
+        desc,
         price: Number(price),
         category_id,
         available,
@@ -182,7 +182,7 @@ export default function MenuCategoryCRUD() {
         open: false,
         mode: 'create',
         name: '',
-        description: '',
+        desc: '',
         price: '',
         category_id: '',
         available: true,
@@ -277,7 +277,7 @@ export default function MenuCategoryCRUD() {
                   open: true,
                   mode: 'create',
                   name: '',
-                  description: '',
+                  desc: '',
                   price: '',
                   category_id: categories[0].id,
                   available: true,
@@ -314,8 +314,8 @@ export default function MenuCategoryCRUD() {
                     </div>
                     <div>
                       <div className="mn">{dish.name}</div>
-                      <div className="mc truncate max-w-[280px]" title={dish.description}>
-                        {dish.description || 'Sin descripción'}
+                      <div className="mc truncate max-w-[280px]" title={dish.desc}>
+                        {dish.desc || 'Sin descripción'}
                       </div>
                     </div>
                     <div className="text-[13px] text-[var(--night-soft)]">
@@ -337,7 +337,7 @@ export default function MenuCategoryCRUD() {
                             mode: 'edit',
                             id: dish.id,
                             name: dish.name,
-                            description: dish.description || '',
+                            desc: dish.desc || '',
                             price: String(dish.price),
                             category_id: dish.category_id,
                             available: dish.available,
@@ -506,8 +506,8 @@ export default function MenuCategoryCRUD() {
             <div className="dfield">
               <label>Descripción / Detalles</label>
               <textarea
-                value={dishModal.description}
-                onChange={(e) => setDishModal((prev) => ({ ...prev, description: e.target.value }))}
+                value={dishModal.desc}
+                onChange={(e) => setDishModal((prev) => ({ ...prev, desc: e.target.value }))}
                 placeholder="Ej. Trozos de carne flameados con cebolla y tomate..."
                 rows={2}
                 style={{ resize: 'none' }}
@@ -595,7 +595,7 @@ export default function MenuCategoryCRUD() {
                     open: false,
                     mode: 'create',
                     name: '',
-                    description: '',
+                    desc: '',
                     price: '',
                     category_id: '',
                     available: true,

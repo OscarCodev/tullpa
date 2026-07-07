@@ -1,22 +1,4 @@
-# menu-category-management Specification
-
-## Purpose
-This capability covers the menu category and dish CRUD dashboards, creation/editing overlays, availability switch states, and category deletion dependencies.
-## Requirements
-### Requirement: Menu Categories CRUD
-The system SHALL allow staff members to view all categories and perform creation, update, and deletion operations on them in Supabase. Category deletion SHALL be blocked if there are dishes currently associated with that category.
-
-#### Scenario: Create category successfully
-- **WHEN** the staff member inputs a name "Postres", emoji "🍰", and submits
-- **THEN** the system inserts the record into Supabase and updates the category list
-
-#### Scenario: Edit category successfully
-- **WHEN** the staff member modifies the name of an existing category to "Entradas Especiales" and saves
-- **THEN** the system updates the record in Supabase and updates the display
-
-#### Scenario: Delete category successfully
-- **WHEN** the staff member clicks delete on an empty category (no associated dishes)
-- **THEN** the system deletes the category in Supabase and removes it from the dashboard view
+## MODIFIED Requirements
 
 ### Requirement: Menu Dishes CRUD
 The system SHALL allow staff members to view all dishes and perform creation, details editing, availability toggling, and deletion operations in Supabase.
@@ -36,4 +18,3 @@ The system SHALL allow staff members to view all dishes and perform creation, de
 #### Scenario: Delete dish successfully
 - **WHEN** the staff member clicks delete on a dish and confirms
 - **THEN** the system deletes the record in Supabase and removes it from the list
-
