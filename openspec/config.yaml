@@ -1,0 +1,9 @@
+schema: spec-driven
+
+Proyecto: Software para restaurantes "Tullpa" (MVP).
+Stack: Next.js (App Router, TypeScript) + Supabase (PostgreSQL, Auth, Realtime) + Tailwind.
+Organización: Clean Architecture pragmática, módulos por funcionalidad.
+Diseño de referencia: /design/prototipo.html (replicar look & feel y user flow).
+Estados de pedido: recibido → preparacion → listo → entregado.
+Objetivo: cubrir 10 historias de usuario (HU-01 a HU-10) con trazabilidad spec↔código.
+Pruebas: Vitest + Testing Library, con reporte de cobertura.
