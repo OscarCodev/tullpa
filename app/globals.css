@@ -610,6 +610,7 @@ body {
   font-family: var(--disp);
   font-weight: 600;
   font-size: 22px;
+  color: #fff;
 }
 .login h1 {
   font-family: var(--disp);
@@ -617,6 +618,7 @@ body {
   font-size: 25px;
   margin: 20px 0 6px;
   letter-spacing: -.3px;
+  color: #fff;
 }
 .login .sub {
   color: var(--night-soft);
